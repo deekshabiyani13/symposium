@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#C9A84C;
+  --gold-light:#E8D5A3;
+  --gold-dim:#8B6914;
+  --wine:#6B1A2A;
+  --wine-deep:#3D0A14;
+  --wine-light:#9B2940;
+  --black:#0A0806;
+  --ivory:#F5EDD6;
+  --ivory-dark:#D4C49A;
+  --marble:#1A1410;
+  --candle:#F2C56E;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--black);
+  color:var(--ivory);
+  font-family:'Cormorant Garamond',serif;
+  overflow-x:hidden;
+  cursor:crosshair;
+}
+#canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.section{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  z-index:1;
+  padding:4rem 2rem;
+}
+
+/* INTRO */
+#intro{
+  background:radial-gradient(ellipse at center, #1a0d05 0%, #0A0806 70%);
+  text-align:center;
+}
+.intro-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.2rem,3vw,1.8rem);
+  letter-spacing:0.4em;
+  color:var(--gold-light);
+  opacity:0;
+  animation:fadeUp 2s ease forwards;
+  text-transform:uppercase;
+}
+.intro-title.delay1{animation-delay:1.5s}
+.intro-title.delay2{animation-delay:3s}
+.intro-main{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(3rem,8vw,7rem);
+  font-style:italic;
+  color:var(--ivory);
+  opacity:0;
+  animation:fadeUp 2s ease forwards 4.5s;
+  line-height:1;
+  margin:1rem 0;
+  text-shadow:0 0 80px rgba(201,168,76,0.3);
+}
+.intro-subtitle{
+  font-size:clamp(0.9rem,2vw,1.2rem);
+  color:var(--ivory-dark);
+  letter-spacing:0.2em;
+  opacity:0;
+  animation:fadeUp 2s ease forwards 6s;
+  font-style:italic;
+}
+.gold-line{
+  width:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:2rem auto;
+  animation:expandLine 2s ease forwards 5.5s;
+}
+#enter-btn{
+  opacity:0;
+  animation:fadeUp 1.5s ease forwards 7s;
+  background:transparent;
+  border:1px solid var(--gold);
+  color:var(--gold-light);
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem;
+  letter-spacing:0.3em;
+  padding:1rem 3rem;
+  cursor:pointer;
+  text-transform:uppercase;
+  position:relative;
+  overflow:hidden;
+  transition:all 0.4s ease;
+  margin-top:2rem;
+}
+#enter-btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:var(--gold);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform 0.4s ease;
+  z-index:-1;
+}
+#enter-btn:hover::before{transform:scaleX(1)}
+#enter-btn:hover{color:var(--black)}
+
+/* ORACLE */
+#oracle{
+  background:radial-gradient(ellipse at 30% 50%, #1a0a12 0%, #0A0806 60%);
+  text-align:center;
+}
+.oracle-eye{
+  width:80px;height:80px;
+  margin:0 auto 2rem;
+  position:relative;
+  animation:pulse 3s ease-in-out infinite;
+}
+.oracle-eye svg{width:100%;height:100%}
+.oracle-text{
+  font-size:clamp(1rem,2.5vw,1.4rem);
+  color:var(--ivory-dark);
+  font-style:italic;
+  line-height:2;
+  max-width:700px;
+  letter-spacing:0.05em;
+}
+.oracle-text span{
+  color:var(--gold-light);
+  font-family:'Playfair Display',serif;
+}
+.oracle-heading{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,5vw,4rem);
+  color:var(--gold);
+  font-style:italic;
+  margin-bottom:2rem;
+  text-shadow:0 0 40px rgba(201,168,76,0.4);
+}
+.marble-divider{
+  width:200px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:2rem auto;
+}
+
+/* TRIALS */
+#trials{
+  background:radial-gradient(ellipse at 70% 30%, #0d1420 0%, #0A0806 60%);
+}
+.trial-container{max-width:800px;width:100%;text-align:center}
+.trial-heading{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.8rem,4vw,3rem);
+  color:var(--gold);
+  font-style:italic;
+  margin-bottom:0.5rem;
+}
+.trial-subheading{
+  color:var(--ivory-dark);
+  font-size:1.1rem;
+  font-style:italic;
+  margin-bottom:3rem;
+  letter-spacing:0.1em;
+}
+.riddle-card{
+  background:linear-gradient(135deg,rgba(26,20,16,0.9),rgba(61,10,20,0.3));
+  border:1px solid rgba(201,168,76,0.3);
+  padding:2.5rem;
+  border-radius:2px;
+  margin-bottom:2rem;
+  position:relative;
+  transition:border-color 0.3s;
+}
+.riddle-card::before{
+  content:'';
+  position:absolute;
+  top:-1px;left:10%;right:10%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.riddle-card.solved{border-color:var(--gold);box-shadow:0 0 30px rgba(201,168,76,0.15)}
+.riddle-num{
+  font-size:0.75rem;
+  letter-spacing:0.4em;
+  color:var(--gold-dim);
+  text-transform:uppercase;
+  margin-bottom:1rem;
+}
+.riddle-q{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.1rem,2.5vw,1.5rem);
+  color:var(--ivory);
+  font-style:italic;
+  line-height:1.6;
+  margin-bottom:2rem;
+}
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.choice-btn{
+  background:rgba(245,237,214,0.04);
+  border:1px solid rgba(201,168,76,0.2);
+  color:var(--ivory-dark);
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;
+  padding:1rem;
+  cursor:pointer;
+  transition:all 0.3s;
+  font-style:italic;
+  letter-spacing:0.05em;
+}
+.choice-btn:hover{background:rgba(201,168,76,0.1);border-color:var(--gold);color:var(--gold-light)}
+.choice-btn.correct{background:rgba(201,168,76,0.15);border-color:var(--gold);color:var(--gold-light)}
+.choice-btn.wrong{background:rgba(107,26,42,0.2);border-color:rgba(155,41,64,0.4);color:rgba(245,237,214,0.4)}
+.reveal-text{
+  margin-top:1.5rem;
+  padding:1.5rem;
+  border-top:1px solid rgba(201,168,76,0.2);
+  color:var(--gold-light);
+  font-style:italic;
+  font-size:1.05rem;
+  line-height:1.7;
+  display:none;
+  animation:fadeUp 0.8s ease;
+}
+.reveal-text.show{display:block}
+.score-display{
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;
+  color:var(--gold);
+  text-align:center;
+  padding:1rem;
+  letter-spacing:0.2em;
+}
+
+/* GODS */
+#gods{
+  background:radial-gradient(ellipse at 50% 80%, #12060a 0%, #0A0806 50%);
+  padding:6rem 2rem;
+}
+.gods-heading{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,5vw,4rem);
+  color:var(--gold);
+  font-style:italic;
+  text-align:center;
+  margin-bottom:0.5rem;
+}
+.gods-sub{
+  text-align:center;
+  color:var(--ivory-dark);
+  font-style:italic;
+  letter-spacing:0.2em;
+  font-size:1rem;
+  margin-bottom:4rem;
+}
+.gods-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:2rem;
+  max-width:1100px;
+  width:100%;
+}
+.god-card{
+  border:1px solid rgba(201,168,76,0.2);
+  padding:2.5rem 2rem;
+  position:relative;
+  cursor:pointer;
+  transition:all 0.4s ease;
+  background:rgba(10,8,6,0.6);
+}
+.god-card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transition:opacity 0.4s;
+  pointer-events:none;
+}
+.god-card.athena::after{background:radial-gradient(ellipse,rgba(59,130,246,0.06),transparent)}
+.god-card.dionysus::after{background:radial-gradient(ellipse,rgba(107,26,42,0.15),transparent)}
+.god-card.aphrodite::after{background:radial-gradient(ellipse,rgba(201,168,76,0.08),transparent)}
+.god-card.hermes::after{background:radial-gradient(ellipse,rgba(34,197,94,0.05),transparent)}
+.god-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.god-card:hover::after{opacity:1}
+.god-symbol{
+  font-size:2.5rem;
+  margin-bottom:1rem;
+  display:block;
+}
+.god-name{
+  font-family:'Playfair Display',serif;
+  font-size:1.6rem;
+  color:var(--gold);
+  font-style:italic;
+  margin-bottom:0.3rem;
+}
+.god-domain{
+  font-size:0.75rem;
+  letter-spacing:0.3em;
+  color:var(--gold-dim);
+  text-transform:uppercase;
+  margin-bottom:1.5rem;
+}
+.god-speech{
+  font-size:1rem;
+  color:var(--ivory-dark);
+  line-height:1.8;
+  font-style:italic;
+}
+.god-speech em{color:var(--gold-light);font-style:normal}
+
+/* MEMORIES */
+#memories{
+  background:radial-gradient(ellipse at 50% 0%, #120a08 0%, #0A0806 50%);
+  padding:6rem 2rem;
+}
+.memories-heading{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,5vw,4rem);
+  color:var(--gold);
+  font-style:italic;
+  text-align:center;
+  margin-bottom:0.5rem;
+}
+.memories-sub{
+  text-align:center;
+  color:var(--ivory-dark);
+  font-style:italic;
+  letter-spacing:0.1em;
+  margin-bottom:4rem;
+  max-width:500px;
+  line-height:1.8;
+}
+.gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:2rem;
+  max-width:1100px;
+  width:100%;
+}
+.artifact{
+  position:relative;
+  cursor:pointer;
+  transition:transform 0.4s ease;
+}
+.artifact:hover{transform:scale(1.03) rotate(0.5deg)}
+.artifact:nth-child(even):hover{transform:scale(1.03) rotate(-0.5deg)}
+.artifact-frame{
+  border:1px solid rgba(201,168,76,0.3);
+  padding:1rem;
+  background:linear-gradient(135deg,rgba(26,20,16,0.95),rgba(20,15,10,0.95));
+  box-shadow:0 10px 40px rgba(0,0,0,0.6),inset 0 0 30px rgba(0,0,0,0.3);
+  position:relative;
+}
+.artifact-frame::before{
+  content:'';
+  position:absolute;
+  inset:4px;
+  border:1px solid rgba(201,168,76,0.1);
+  pointer-events:none;
+}
+.artifact-img{
+  width:100%;
+  aspect-ratio:4/3;
+  object-fit:cover;
+  display:block;
+  background:linear-gradient(135deg,#1a1208,#2d1f15);
+  position:relative;
+  overflow:hidden;
+}
+.artifact-img-placeholder{
+  width:100%;
+  aspect-ratio:4/3;
+  background:linear-gradient(135deg,#1a1208,#2a1810,#1a1208);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:rgba(201,168,76,0.2);
+  font-size:0.75rem;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  border:1px dashed rgba(201,168,76,0.15);
+  gap:0.5rem;
+}
+.artifact-img-placeholder span{font-size:1.5rem;opacity:0.4}
+.artifact-caption{
+  padding:1rem 0.5rem 0.5rem;
+  font-style:italic;
+  font-size:0.9rem;
+  color:var(--ivory-dark);
+  line-height:1.7;
+  text-align:center;
+}
+.artifact-caption em{color:var(--gold-light);font-style:normal;display:block;font-size:0.75rem;letter-spacing:0.1em;margin-top:0.3rem;opacity:0.7}
+.artifact-glow{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transition:opacity 0.4s;
+  box-shadow:inset 0 0 30px rgba(201,168,76,0.1),0 0 40px rgba(201,168,76,0.1);
+  pointer-events:none;
+}
+.artifact:hover .artifact-glow{opacity:1}
+
+/* EASTER EGGS */
+.easter-egg{
+  position:fixed;
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--gold);
+  cursor:pointer;
+  z-index:100;
+  opacity:0.6;
+  transition:all 0.3s;
+}
+.easter-egg:hover{
+  transform:scale(3);
+  opacity:1;
+  box-shadow:0 0 10px var(--gold);
+}
+.egg-tooltip{
+  position:fixed;
+  background:rgba(10,8,6,0.95);
+  border:1px solid var(--gold);
+  padding:1rem 1.5rem;
+  font-style:italic;
+  color:var(--gold-light);
+  font-size:0.9rem;
+  max-width:250px;
+  z-index:101;
+  display:none;
+  pointer-events:none;
+  line-height:1.6;
+}
+
+/* FINAL */
+#final{
+  background:radial-gradient(ellipse at center, #1a0808 0%, #0A0806 60%);
+  text-align:center;
+  min-height:100vh;
+}
+.final-oracle{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(0.9rem,2vw,1.2rem);
+  letter-spacing:0.5em;
+  color:var(--gold-dim);
+  text-transform:uppercase;
+  margin-bottom:3rem;
+}
+.final-conclusion{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.2rem,3vw,2rem);
+  color:var(--ivory-dark);
+  font-style:italic;
+  margin-bottom:2rem;
+  line-height:1.5;
+}
+.final-reveal{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(3rem,8vw,7rem);
+  color:var(--gold);
+  font-style:italic;
+  text-shadow:0 0 80px rgba(201,168,76,0.5),0 0 160px rgba(201,168,76,0.2);
+  line-height:1;
+  margin-bottom:1rem;
+  animation:flicker 4s ease-in-out infinite;
+}
+.final-sub{
+  font-size:clamp(1.2rem,2.5vw,1.8rem);
+  color:var(--ivory);
+  font-style:italic;
+  letter-spacing:0.1em;
+  margin-bottom:3rem;
+}
+.invitation-card{
+  border:1px solid var(--gold);
+  padding:3rem 4rem;
+  max-width:500px;
+  margin:0 auto 3rem;
+  position:relative;
+  background:rgba(10,8,6,0.8);
+}
+.invitation-card::before,.invitation-card::after{
+  content:'✦';
+  position:absolute;
+  color:var(--gold);
+  font-size:0.8rem;
+}
+.invitation-card::before{top:1rem;left:1rem}
+.invitation-card::after{bottom:1rem;right:1rem}
+.inv-detail{
+  font-size:0.85rem;
+  letter-spacing:0.3em;
+  color:var(--gold-dim);
+  text-transform:uppercase;
+  margin-bottom:0.5rem;
+}
+.inv-main{
+  font-family:'Playfair Display',serif;
+  font-size:1.8rem;
+  color:var(--gold-light);
+  font-style:italic;
+  margin-bottom:2rem;
+}
+.inv-quote{
+  font-style:italic;
+  color:var(--ivory-dark);
+  font-size:1rem;
+  line-height:1.8;
+  border-top:1px solid rgba(201,168,76,0.2);
+  padding-top:1.5rem;
+}
+.rsvp-btn{
+  background:transparent;
+  border:1px solid var(--gold);
+  color:var(--gold-light);
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem;
+  letter-spacing:0.3em;
+  padding:1.2rem 4rem;
+  cursor:pointer;
+  text-transform:uppercase;
+  transition:all 0.4s ease;
+  position:relative;
+  overflow:hidden;
+}
+.rsvp-btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:var(--gold);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform 0.4s ease;
+  z-index:-1;
+}
+.rsvp-btn:hover::before{transform:scaleX(1)}
+.rsvp-btn:hover{color:var(--black)}
+.final-quote{
+  margin-top:3rem;
+  font-style:italic;
+  color:rgba(245,237,214,0.35);
+  font-size:0.95rem;
+  letter-spacing:0.05em;
+}
+
+/* PARTICLES & STARS */
+.stars-layer{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.star{
+  position:absolute;
+  background:var(--gold-light);
+  border-radius:50%;
+  animation:twinkle var(--d,3s) ease-in-out infinite var(--dl,0s);
+}
+.dust{
+  position:fixed;
+  pointer-events:none;
+  z-index:2;
+  top:0;left:0;width:100%;height:100%;
+}
+
+/* NAV */
+.nav{
+  position:fixed;
+  top:2rem;
+  right:2rem;
+  z-index:200;
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+  align-items:flex-end;
+}
+.nav-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  border:1px solid rgba(201,168,76,0.4);
+  cursor:pointer;
+  transition:all 0.3s;
+  position:relative;
+}
+.nav-dot:hover,.nav-dot.active{
+  background:var(--gold);
+  border-color:var(--gold);
+  box-shadow:0 0 8px var(--gold);
+}
+.nav-dot::after{
+  content:attr(data-label);
+  position:absolute;
+  right:1.5rem;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:0.7rem;
+  letter-spacing:0.2em;
+  color:var(--gold-dim);
+  white-space:nowrap;
+  opacity:0;
+  transition:opacity 0.3s;
+  text-transform:uppercase;
+  font-family:'Cormorant Garamond',serif;
+}
+.nav-dot:hover::after{opacity:1}
+
+/* SCROLL HINT */
+.scroll-hint{
+  position:absolute;
+  bottom:2rem;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0.5rem;
+  opacity:0.5;
+  animation:breathe 2s ease-in-out infinite;
+}
+.scroll-hint span{
+  font-size:0.7rem;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  color:var(--gold-dim);
+}
+.scroll-arrow{
+  width:1px;
+  height:30px;
+  background:linear-gradient(180deg,var(--gold),transparent);
+}
+
+/* CANDLE */
+.candle-row{
+  display:flex;
+  justify-content:center;
+  gap:3rem;
+  margin:3rem 0;
+}
+.candle{display:flex;flex-direction:column;align-items:center}
+.candle-flame{
+  width:8px;height:14px;
+  background:radial-gradient(ellipse,#fff8e1,var(--candle),transparent);
+  border-radius:50% 50% 30% 30%;
+  animation:candleFlicker calc(0.8s + var(--fi,0s)) ease-in-out infinite alternate;
+  margin-bottom:2px;
+}
+.candle-body{
+  width:12px;
+  height:40px;
+  background:linear-gradient(180deg,#e8d5a3,#c9a84c);
+  border-radius:2px 2px 0 0;
+}
+.candle-base{
+  width:18px;height:3px;
+  background:var(--gold-dim);
+  border-radius:0 0 2px 2px;
+}
+
+/* KEYFRAMES */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes expandLine{
+  from{width:0}
+  to{width:300px}
+}
+@keyframes pulse{
+  0%,100%{filter:drop-shadow(0 0 8px rgba(201,168,76,0.4))}
+  50%{filter:drop-shadow(0 0 20px rgba(201,168,76,0.8))}
+}
+@keyframes twinkle{
+  0%,100%{opacity:var(--oa,0.3);transform:scale(1)}
+  50%{opacity:var(--ob,0.9);transform:scale(1.5)}
+}
+@keyframes breathe{
+  0%,100%{opacity:0.3}
+  50%{opacity:0.7}
+}
+@keyframes candleFlicker{
+  from{transform:scaleX(1) scaleY(1);opacity:0.9}
+  to{transform:scaleX(0.85) scaleY(1.1);opacity:1}
+}
+@keyframes flicker{
+  0%,100%{text-shadow:0 0 80px rgba(201,168,76,0.5),0 0 160px rgba(201,168,76,0.2)}
+  50%{text-shadow:0 0 60px rgba(201,168,76,0.4),0 0 120px rgba(201,168,76,0.15)}
+}
+@keyframes float{
+  0%,100%{transform:translateY(0) translateX(0) rotate(0deg);opacity:0.6}
+  33%{transform:translateY(-20px) translateX(5px) rotate(2deg);opacity:0.9}
+  66%{transform:translateY(-10px) translateX(-5px) rotate(-1deg);opacity:0.7}
+}
+@keyframes constellation{
+  0%{stroke-dashoffset:var(--len,200)}
+  100%{stroke-dashoffset:0}
+}
+.constellation{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.const-line{
+  stroke:rgba(201,168,76,0.15);
+  stroke-width:0.5;
+  fill:none;
+  stroke-dasharray:var(--len,200);
+  stroke-dashoffset:var(--len,200);
+  animation:constellation 4s ease forwards var(--cd,1s);
+}
+.reveal-section{
+  opacity:0;
+  transform:translateY(30px);
+  transition:all 1s ease;
+}
+.reveal-section.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- Stars background -->
+<div class="stars-layer" id="stars"></div>
+
+<!-- Navigation -->
+<nav class="nav" id="mainNav">
+  <div class="nav-dot active" data-target="intro" data-label="Entrance"></div>
+  <div class="nav-dot" data-target="oracle" data-label="The Oracle"></div>
+  <div class="nav-dot" data-target="trials" data-label="Trials"></div>
+  <div class="nav-dot" data-target="gods" data-label="The Gods"></div>
+  <div class="nav-dot" data-target="memories" data-label="Memories"></div>
+  <div class="nav-dot" data-target="final" data-label="The Answer"></div>
+</nav>
+
+<!-- Easter egg tooltip -->
+<div id="eggTooltip" class="egg-tooltip"></div>
+
+<!-- SECTION 1: INTRO -->
+<section class="section" id="intro">
+  <div class="constellation">
+    <svg width="100%" height="100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+      <line x1="100" y1="150" x2="300" y2="80" class="const-line" style="--len:220;--cd:8s"/>
+      <line x1="300" y1="80" x2="500" y2="200" class="const-line" style="--len:250;--cd:9s"/>
+      <line x1="500" y1="200" x2="400" y2="350" class="const-line" style="--len:180;--cd:10s"/>
+      <line x1="900" y1="100" x2="1100" y2="200" class="const-line" style="--len:230;--cd:8.5s"/>
+      <line x1="1100" y1="200" x2="1050" y2="400" class="const-line" style="--len:200;--cd:9.5s"/>
+      <line x1="200" y1="600" x2="350" y2="500" class="const-line" style="--len:170;--cd:11s"/>
+      <line x1="350" y1="500" x2="600" y2="650" class="const-line" style="--len:280;--cd:12s"/>
+      <circle cx="100" cy="150" r="2" fill="rgba(201,168,76,0.5)"/>
+      <circle cx="300" cy="80" r="3" fill="rgba(201,168,76,0.7)"/>
+      <circle cx="500" cy="200" r="2" fill="rgba(201,168,76,0.4)"/>
+      <circle cx="400" cy="350" r="2" fill="rgba(201,168,76,0.5)"/>
+      <circle cx="900" cy="100" r="3" fill="rgba(201,168,76,0.6)"/>
+      <circle cx="1100" cy="200" r="2" fill="rgba(201,168,76,0.4)"/>
+      <circle cx="1050" cy="400" r="2" fill="rgba(201,168,76,0.5)"/>
+      <circle cx="200" cy="600" r="2" fill="rgba(201,168,76,0.4)"/>
+      <circle cx="350" cy="500" r="3" fill="rgba(201,168,76,0.7)"/>
+      <circle cx="600" cy="650" r="2" fill="rgba(201,168,76,0.5)"/>
+    </svg>
+  </div>
+  <p class="intro-title">The Ancient</p>
+  <h1 class="intro-main">Symposium</h1>
+  <div class="gold-line" id="goldLine"></div>
+  <p class="intro-subtitle delay2">A private philosophical inquiry — curated for one</p>
+  <div class="candle-row" style="opacity:0;animation:fadeUp 1s ease forwards 6.5s">
+    <div class="candle"><div class="candle-flame" style="--fi:0.1s"></div><div class="candle-body"></div><div class="candle-base"></div></div>
+    <div class="candle"><div class="candle-flame" style="--fi:0.3s"></div><div class="candle-body" style="height:50px"></div><div class="candle-base"></div></div>
+    <div class="candle"><div class="candle-flame" style="--fi:0.2s"></div><div class="candle-body" style="height:35px"></div><div class="candle-base"></div></div>
+  </div>
+  <button id="enter-btn" onclick="enterSymposium()">✦ Enter ✦</button>
+  <div class="scroll-hint" style="display:none" id="scrollHint">
+    <span>Descend</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- SECTION 2: ORACLE -->
+<section class="section" id="oracle">
+  <div class="oracle-eye" title="The Oracle's Eye">
+    <svg viewBox="0 0 80 80" fill="none">
+      <ellipse cx="40" cy="40" rx="36" ry="22" stroke="rgba(201,168,76,0.4)" stroke-width="0.5"/>
+      <ellipse cx="40" cy="40" rx="30" ry="18" stroke="rgba(201,168,76,0.3)" stroke-width="0.5"/>
+      <circle cx="40" cy="40" r="14" fill="none" stroke="rgba(201,168,76,0.5)" stroke-width="0.5"/>
+      <circle cx="40" cy="40" r="8" fill="rgba(107,26,42,0.8)" stroke="rgba(201,168,76,0.6)" stroke-width="0.5"/>
+      <circle cx="40" cy="40" r="3" fill="rgba(201,168,76,0.9)"/>
+      <circle cx="37" cy="38" r="1" fill="rgba(255,255,255,0.6)"/>
+    </svg>
+  </div>
+  <p class="intro-title reveal-section" style="margin-bottom:1rem">The Oracle Speaks</p>
+  <h2 class="oracle-heading reveal-section">A Prophecy Unfolds</h2>
+  <div class="marble-divider"></div>
+  <div class="oracle-text reveal-section" style="animation-delay:0.3s">
+    <p style="margin-bottom:1.5rem">The Fates have woven your name into the thread of tonight.</p>
+    <p style="margin-bottom:1.5rem">You who have walked with <span>Plato</span>, argued with <span>Aristotle</span>,<br>and drank deeply from the well of <span>Heraclitean fire</span>—</p>
+    <p style="margin-bottom:1.5rem">The symposium calls to you, <span>Mannan</span>.</p>
+    <p style="color:rgba(201,168,76,0.5);font-size:0.9rem;letter-spacing:0.3em;text-transform:uppercase;margin-top:2rem">But first — you must prove worthy.</p>
+  </div>
+  <div class="marble-divider" style="margin-top:3rem"></div>
+</section>
+
+<!-- SECTION 3: TRIALS -->
+<section class="section" id="trials">
+  <div class="trial-container">
+    <h2 class="trial-heading reveal-section">The Logic Trials</h2>
+    <p class="trial-subheading reveal-section">Three questions stand between you and the truth</p>
+    
+    <div class="riddle-card reveal-section" id="r1">
+      <p class="riddle-num">Trial I — The Philosopher's Paradox</p>
+      <p class="riddle-q">"The unexamined life is not worth living." — Socrates died for this claim. What, then, is the examined life ultimately <em>for</em>?</p>
+      <div class="choice-grid">
+        <button class="choice-btn" onclick="answer(1,'a')">For the attainment of virtue</button>
+        <button class="choice-btn" onclick="answer(1,'b')">For personal happiness alone</button>
+        <button class="choice-btn" onclick="answer(1,'a')">For understanding itself — the love of wisdom</button>
+        <button class="choice-btn" onclick="answer(1,'b')">For political power over others</button>
+      </div>
+      <div class="reveal-text" id="r1-reveal">
+        ✦ &nbsp; Precisely. Socrates did not examine life to arrive — he examined it to <em>move</em>. Much like a certain someone who never stops asking questions, even when the answers might inconvenience him. She finds this extraordinarily attractive.
+      </div>
+    </div>
+
+    <div class="riddle-card reveal-section" id="r2" style="animation-delay:0.2s">
+      <p class="riddle-num">Trial II — The Mythological Riddle</p>
+      <p class="riddle-q">Which god presides over both the revelry of wine <em>and</em> the theater of tragedy — knowing that the highest joy always contains within it the seed of sorrow?</p>
+      <div class="choice-grid">
+        <button class="choice-btn" onclick="answer(2,'b')">Apollo, god of reason and light</button>
+        <button class="choice-btn" onclick="answer(2,'a')">Dionysus, god of ecstasy and dissolution</button>
+        <button class="choice-btn" onclick="answer(2,'b')">Ares, god of war and passion</button>
+        <button class="choice-btn" onclick="answer(2,'b')">Hermes, god of clever crossings</button>
+      </div>
+      <div class="reveal-text" id="r2-reveal">
+        ✦ &nbsp; Dionysus — who taught the Greeks that the most profound experiences contain their opposite. That a wine bar, for instance, might be the site of the most genuine philosophy. <em>Stoa</em> awaits its willing contradiction.
+      </div>
+    </div>
+
+    <div class="riddle-card reveal-section" id="r3" style="animation-delay:0.4s">
+      <p class="riddle-num">Trial III — The Logical Proposition</p>
+      <p class="riddle-q">If all great evenings contain: good wine, sharper minds, and one specific person — and tonight offers all three — what does logic demand you do?</p>
+      <div class="choice-grid">
+        <button class="choice-btn" onclick="answer(3,'b')">Deliberate further</button>
+        <button class="choice-btn" onclick="answer(3,'a')">Say yes without hesitation</button>
+        <button class="choice-btn" onclick="answer(3,'b')">Consult Kant first</button>
+        <button class="choice-btn" onclick="answer(3,'a')">The syllogism is self-evident — attend</button>
+      </div>
+      <div class="reveal-text" id="r3-reveal">
+        ✦ &nbsp; Modus ponens is undefeated. The conclusion follows necessarily. Even Aristotle would approve of this particular deduction — though he would have written 400 pages about it first.
+      </div>
+    </div>
+
+    <div class="score-display reveal-section" id="scoreDisplay" style="animation-delay:0.6s">
+      The Oracle observes your answers... ✦
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: GODS -->
+<section class="section" id="gods">
+  <h2 class="gods-heading reveal-section">The Council of Gods</h2>
+  <p class="gods-sub reveal-section">They have been consulted. They have reached consensus.</p>
+  
+  <div class="gods-grid reveal-section">
+    <div class="god-card athena">
+      <span class="god-symbol">🦉</span>
+      <h3 class="god-name">Athena</h3>
+      <p class="god-domain">Goddess of Wisdom & Strategic Intelligence</p>
+      <p class="god-speech">I, who sprang fully armored from the mind of Zeus, have reviewed the strategic calculus. The variables are as follows: <em>good conversation, exquisite wine, one brilliant woman.</em> My recommendation is unambiguous. A philosopher who refuses this proposition has confused cowardice for contemplation. Do not dishonor my owl.</p>
+    </div>
+    
+    <div class="god-card dionysus">
+      <span class="god-symbol">🍷</span>
+      <h3 class="god-name">Dionysus</h3>
+      <p class="god-domain">God of Wine, Theatre & Sacred Madness</p>
+      <p class="god-speech">Ah, <em>Stoa.</em> I know it well. The wine there has heard better arguments than most academies. I personally endorse venues named after the philosophical school of the Stoics — the irony alone deserves a toast. Come, pour out your reason. Let something truer in. I'll be at the bar.</p>
+    </div>
+    
+    <div class="god-card aphrodite">
+      <span class="god-symbol">✦</span>
+      <h3 class="god-name">Aphrodite</h3>
+      <p class="god-domain">Goddess of Love, Beauty & Desire</p>
+      <p class="god-speech">She made this entire website for you. <em>The entire website.</em> Constellations, Greek gods, a philosophical riddle — all to ask you one question. I oversee love in all its forms, and I have rarely witnessed something this specifically calibrated to one person. The least you can do is say yes. And mean it.</p>
+    </div>
+    
+    <div class="god-card hermes">
+      <span class="god-symbol">⚡</span>
+      <h3 class="god-name">Hermes</h3>
+      <p class="god-domain">Messenger of the Gods & God of Crossroads</p>
+      <p class="god-speech">I traverse between worlds — Olympus and the underworld, mortal and divine. And I tell you: <em>every interesting story begins with someone saying yes to an unexpected invitation.</em> Odysseus said yes to the sea. Orpheus said yes to love. Tonight, say yes to Stoa. I'll make sure the evening gets interesting.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: MEMORIES -->
+<section class="section" id="memories">
+  <h2 class="memories-heading reveal-section">The Hall of Memories</h2>
+  <p class="memories-sub reveal-section">These are not photographs. They are artifacts. Evidence of a specific kind of time — the kind that does not repeat.</p>
+  
+  <div class="gallery reveal-section">
+    <div class="artifact">
+      <div class="artifact-frame">
+        <div class="artifact-img-placeholder">
+          <span>◈</span>
+          <div>Add your photo here</div>
+          <div style="font-size:0.6rem;opacity:0.5">Replace with img tag</div>
+        </div>
+        <div class="artifact-glow"></div>
+        <p class="artifact-caption">
+          You did not know it then, but this became one of her favorite moments.
+          <em>✦ Memory I</em>
+        </p>
+      </div>
+    </div>
+    
+    <div class="artifact" style="transform:rotate(1deg)">
+      <div class="artifact-frame">
+        <div class="artifact-img-placeholder">
+          <span>◈</span>
+          <div>Add your photo here</div>
+          <div style="font-size:0.6rem;opacity:0.5">Replace with img tag</div>
+        </div>
+        <div class="artifact-glow"></div>
+        <p class="artifact-caption">
+          The Fates marked this evening in their ledger. The record shows: laughter.
+          <em>✦ Memory II</em>
+        </p>
+      </div>
+    </div>
+    
+    <div class="artifact" style="transform:rotate(-0.5deg)">
+      <div class="artifact-frame">
+        <div class="artifact-img-placeholder">
+          <span>◈</span>
+          <div>Add your photo here</div>
+          <div style="font-size:0.6rem;opacity:0.5">Replace with img tag</div>
+        </div>
+        <div class="artifact-glow"></div>
+        <p class="artifact-caption">
+          This is what Plato meant by "the other half." This exact moment.
+          <em>✦ Memory III</em>
+        </p>
+      </div>
+    </div>
+    
+    <div class="artifact" style="transform:rotate(0.8deg)">
+      <div class="artifact-frame">
+        <div class="artifact-img-placeholder">
+          <span>◈</span>
+          <div>Add your photo here</div>
+          <div style="font-size:0.6rem;opacity:0.5">Replace with img tag</div>
+        </div>
+        <div class="artifact-glow"></div>
+        <p class="artifact-caption">
+          If this were a myth, scholars would argue about its meaning for centuries.
+          <em>✦ Memory IV</em>
+        </p>
+      </div>
+    </div>
+    
+    <div class="artifact" style="transform:rotate(-1deg)">
+      <div class="artifact-frame">
+        <div class="artifact-img-placeholder">
+          <span>◈</span>
+          <div>Add your photo here</div>
+          <div style="font-size:0.6rem;opacity:0.5">Replace with img tag</div>
+        </div>
+        <div class="artifact-glow"></div>
+        <p class="artifact-caption">
+          The oracle had predicted this, but wisely said nothing at the time.
+          <em>✦ Memory V</em>
+        </p>
+      </div>
+    </div>
+    
+    <div class="artifact" style="transform:rotate(0.3deg)">
+      <div class="artifact-frame">
+        <div class="artifact-img-placeholder">
+          <span>◈</span>
+          <div>Add your photo here</div>
+          <div style="font-size:0.6rem;opacity:0.5">Replace with img tag</div>
+        </div>
+        <div class="artifact-glow"></div>
+        <p class="artifact-caption">
+          Even Heraclitus — who believed nothing repeats — would have wanted this to.
+          <em>✦ Memory VI</em>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: FINAL -->
+<section class="section" id="final">
+  <div class="constellation">
+    <svg width="100%" height="100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+      <line x1="600" y1="50" x2="500" y2="200" class="const-line" style="--len:180;--cd:0.5s"/>
+      <line x1="600" y1="50" x2="700" y2="200" class="const-line" style="--len:180;--cd:0.7s"/>
+      <line x1="500" y1="200" x2="700" y2="200" class="const-line" style="--len:200;--cd:1s"/>
+      <line x1="600" y1="50" x2="600" y2="750" class="const-line" style="--len:700;--cd:1.5s"/>
+      <circle cx="600" cy="50" r="4" fill="rgba(201,168,76,0.9)"/>
+      <circle cx="500" cy="200" r="2.5" fill="rgba(201,168,76,0.6)"/>
+      <circle cx="700" cy="200" r="2.5" fill="rgba(201,168,76,0.6)"/>
+    </svg>
+  </div>
+  
+  <p class="final-oracle reveal-section">✦ &nbsp; The Oracle Has Reached Its Conclusion &nbsp; ✦</p>
+  
+  <div class="candle-row reveal-section" style="animation-delay:0.3s">
+    <div class="candle"><div class="candle-flame" style="--fi:0.15s"></div><div class="candle-body" style="height:55px"></div><div class="candle-base"></div></div>
+    <div class="candle"><div class="candle-flame" style="--fi:0.35s"></div><div class="candle-body"></div><div class="candle-base"></div></div>
+    <div class="candle"><div class="candle-flame" style="--fi:0.25s"></div><div class="candle-body" style="height:45px"></div><div class="candle-base"></div></div>
+    <div class="candle"><div class="candle-flame" style="--fi:0.05s"></div><div class="candle-body" style="height:60px"></div><div class="candle-base"></div></div>
+    <div class="candle"><div class="candle-flame" style="--fi:0.4s"></div><div class="candle-body" style="height:38px"></div><div class="candle-base"></div></div>
+  </div>
+  
+  <p class="final-conclusion reveal-section" style="animation-delay:0.5s">
+    All roads, all riddles, all gods and memories—<br>they converge here.
+  </p>
+  
+  <h2 class="final-reveal reveal-section" style="animation-delay:0.8s">Meet me</h2>
+  <p class="final-sub reveal-section" style="animation-delay:1s">at Stoa.</p>
+  
+  <div class="invitation-card reveal-section" style="animation-delay:1.2s">
+    <p class="inv-detail">A Formal Invitation</p>
+    <p class="inv-main">The Symposium convenes</p>
+    <p class="inv-quote">
+      "At the drinking party, the best of companions is<br>
+      one who brings not only wine but wisdom — and stays<br>
+      until the last argument is satisfactorily resolved."<br><br>
+      <span style="color:rgba(201,168,76,0.5);font-size:0.8rem;letter-spacing:0.2em">— paraphrased loosely, for tonight's purposes</span>
+    </p>
+  </div>
+  
+  <button class="rsvp-btn reveal-section" style="animation-delay:1.4s" onclick="rsvp()">✦ I shall attend ✦</button>
+  
+  <p class="final-quote reveal-section" style="animation-delay:1.6s">
+    "He who is not capable of enduring poverty is not capable of being free." — Epicurus<br>
+    <span style="opacity:0.5">He who does not say yes to this invitation is not capable of good judgment.</span>
+  </p>
+</section>
+
+<script>
+// Stars
+const starsEl=document.getElementById('stars');
+for(let i=0;i<120;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const sz=Math.random()*2+0.5;
+  s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*4}s;--oa:${0.1+Math.random()*0.3};--ob:${0.5+Math.random()*0.5}`;
+  starsEl.appendChild(s);
+}
+
+// Floating dust particles
+const dustCanvas=document.createElement('canvas');
+dustCanvas.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.4';
+document.body.appendChild(dustCanvas);
+const dctx=dustCanvas.getContext('2d');
+let particles=[];
+function resizeDust(){dustCanvas.width=window.innerWidth;dustCanvas.height=window.innerHeight}
+resizeDust();
+window.addEventListener('resize',resizeDust);
+for(let i=0;i<50;i++){
+  particles.push({
+    x:Math.random()*window.innerWidth,
+    y:Math.random()*window.innerHeight,
+    vx:(Math.random()-0.5)*0.2,
+    vy:-Math.random()*0.3-0.1,
+    size:Math.random()*1.5+0.3,
+    alpha:Math.random()*0.5+0.1
+  });
+}
+function animateDust(){
+  dctx.clearRect(0,0,dustCanvas.width,dustCanvas.height);
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.y<0){p.y=dustCanvas.height;p.x=Math.random()*dustCanvas.width}
+    if(p.x<0||p.x>dustCanvas.width)p.vx*=-1;
+    dctx.beginPath();
+    dctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    dctx.fillStyle=`rgba(201,168,76,${p.alpha})`;
+    dctx.fill();
+  });
+  requestAnimationFrame(animateDust);
+}
+animateDust();
+
+// Enter symposium
+function enterSymposium(){
+  document.getElementById('enter-btn').textContent='✦ The Oracle awaits... ✦';
+  document.getElementById('scrollHint').style.display='flex';
+  setTimeout(()=>{
+    document.getElementById('oracle').scrollIntoView({behavior:'smooth'});
+  },800);
+}
+
+// Trial answers
+let scores={1:false,2:false,3:false};
+function answer(trial,type){
+  if(document.getElementById('r'+trial).classList.contains('solved'))return;
+  const card=document.getElementById('r'+trial);
+  const btns=card.querySelectorAll('.choice-btn');
+  const reveal=document.getElementById('r'+trial+'-reveal');
+  
+  const event=window.event||arguments.callee.caller.arguments[0];
+  const btn=event?event.target:null;
+  
+  btns.forEach(b=>{
+    if(b===btn)b.classList.add(type==='a'?'correct':'wrong');
+    else b.classList.add('wrong');
+    b.disabled=true;
+  });
+  
+  if(type==='a'){
+    scores[trial]=true;
+    card.classList.add('solved');
+    reveal.classList.add('show');
+    updateScore();
+  }
+}
+function updateScore(){
+  const correct=Object.values(scores).filter(v=>v).length;
+  const msgs=['The Oracle observes... ✦','One truth uncovered. Two remain. ✦','Two truths. The pattern emerges. ✦','The Oracle is satisfied. You may proceed. ✦'];
+  document.getElementById('scoreDisplay').textContent=msgs[correct];
+}
+
+// Navigation
+document.querySelectorAll('.nav-dot').forEach(dot=>{
+  dot.addEventListener('click',()=>{
+    const target=document.getElementById(dot.dataset.target);
+    if(target)target.scrollIntoView({behavior:'smooth'});
+  });
+});
+
+// Active nav on scroll
+const sections=['intro','oracle','trials','gods','memories','final'];
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('.nav-dot').forEach(d=>{
+        d.classList.toggle('active',d.dataset.target===e.target.id);
+      });
+    }
+  });
+},{threshold:0.4});
+sections.forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)observer.observe(el);
+});
+
+// Reveal on scroll
+const revealObserver=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting)e.target.classList.add('visible');
+  });
+},{threshold:0.15});
+document.querySelectorAll('.reveal-section').forEach(el=>revealObserver.observe(el));
+
+// Easter eggs
+const eggs=[
+  {x:'15%',y:'40%',msg:'"The beginning of wisdom is a definition of terms." — Socrates. She defined the terms: wine + you + tonight.'},
+  {x:'80%',y:'60%',msg:'⊕ Hidden message: She has been planning this since she first saw you argue about Kant at 1am.'},
+  {x:'10%',y:'75%',msg:'✦ The Oracle whispers: even the Stoics occasionally left their stoa for a better one.'},
+  {x:'90%',y:'20%',msg:'φ Phi (1.618...) — the golden ratio. The ratio of times she thinks about this evening to times she thinks about everything else.'},
+  {x:'50%',y:'10%',msg:'⚡ Zeus notes: "Say yes. I am watching. I have thunderbolts."'},
+];
+const tooltip=document.getElementById('eggTooltip');
+eggs.forEach((egg,i)=>{
+  const el=document.createElement('div');
+  el.className='easter-egg';
+  el.style.cssText=`left:${egg.x};top:${egg.y}`;
+  el.addEventListener('mouseenter',function(e){
+    tooltip.textContent=egg.msg;
+    tooltip.style.display='block';
+    tooltip.style.left=(e.clientX+15)+'px';
+    tooltip.style.top=(e.clientY-20)+'px';
+  });
+  el.addEventListener('mouseleave',()=>{tooltip.style.display='none'});
+  el.addEventListener('mousemove',function(e){
+    tooltip.style.left=(e.clientX+15)+'px';
+    tooltip.style.top=(e.clientY-20)+'px';
+  });
+  document.body.appendChild(el);
+});
+
+// RSVP
+function rsvp(){
+  const btn=document.querySelector('.rsvp-btn');
+  btn.textContent='✦ She knew you would. ✦';
+  btn.style.background='rgba(201,168,76,0.15)';
+  btn.style.borderColor='#C9A84C';
+  
+  // Final particle burst
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');
+    p.style.cssText=`position:fixed;width:4px;height:4px;border-radius:50%;background:#C9A84C;left:50%;top:60%;z-index:300;pointer-events:none;animation:none;transition:all ${0.8+Math.random()*1.2}s ease-out;transform:translate(-50%,-50%)`;
+    document.body.appendChild(p);
+    setTimeout(()=>{
+      const angle=Math.random()*Math.PI*2;
+      const dist=100+Math.random()*200;
+      p.style.transform=`translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist-100}px)`;
+      p.style.opacity='0';
+    },50);
+    setTimeout(()=>p.remove(),2000);
+  }
+}
+
+// Click anywhere creates subtle gold ripple
+document.addEventListener('click',function(e){
+  if(e.target.tagName==='BUTTON'||e.target.tagName==='A')return;
+  const ripple=document.createElement('div');
+  ripple.style.cssText=`position:fixed;left:${e.clientX}px;top:${e.clientY}px;width:2px;height:2px;border-radius:50%;border:1px solid rgba(201,168,76,0.4);pointer-events:none;z-index:50;transform:translate(-50%,-50%);animation:none;transition:all 0.8s ease-out`;
+  document.body.appendChild(ripple);
+  setTimeout(()=>{
+    ripple.style.width='60px';
+    ripple.style.height='60px';
+    ripple.style.opacity='0';
+    ripple.style.borderColor='rgba(201,168,76,0.1)';
+  },10);
+  setTimeout(()=>ripple.remove(),900);
+});
+</script>
+</body>
+</html>
